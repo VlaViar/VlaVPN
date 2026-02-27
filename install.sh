@@ -52,7 +52,7 @@ else
 fi
 
 # Create user
-echo -e "${BLUE}[1/9] Creating user...${NC}"
+echo -e "${BLUE}[1/11] Creating user...${NC}"
 read -p "Username (not root): " USER
 [[ -z "$USER" || "$USER" == "root" ]] && { echo -e "${RED}❌ Invalid username.${NC}"; exit 1; }
 id "$USER" &>/dev/null || adduser --disabled-password --gecos "" "$USER"
@@ -63,7 +63,7 @@ echo -e "${RED}❌ User creation error.${NC}" && exit 1
 fi
 
 # Adding a user to the sudo group
-echo -e "${BLUE}[2/9] Adding a user to the sudo group...${NC}"
+echo -e "${BLUE}[2/11] Adding a user to the sudo group...${NC}"
 mkdir -p /etc/sudoers.d
 echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/"$USER"
 chmod 440 /etc/sudoers.d/"$USER"
@@ -79,9 +79,9 @@ echo -e "${YELLOW}! Run on your local machine: 'ssh-keygen -t ed25519 -C \"vpn_k
 read -p "Ready? (y/n): " answer
 [[ "$answer" != "y" ]] && exit 1
 echo -e "${YELLOW}! Paste your public SSH key:${NC}"
-read -p "Key: " KEY
+read -s -p "Key: " KEY
 [[ ! "$KEY" =~ ^ssh-(rsa|ed25519|ecdsa) ]] && { echo -e "${RED}Invalid key format${NC}"; exit 1; }
-echo -e "${BLUE}[3/9] Adding SSH key...${NC}"
+echo -e "${BLUE}[3/11] Adding SSH key...${NC}"
 mkdir -p /home/"$USER"/.ssh
 echo "$KEY" > /home/"$USER"/.ssh/authorized_keys
 chmod 700 /home/"$USER"/.ssh
@@ -96,7 +96,7 @@ fi
 # SSH configuration
 echo -e "${YELLOW}! Enter a free SSH port:${NC}"
 read -p "Port: " SSH_PORT
-echo -e "${BLUE}[4/9] Configuring SSH...${NC}"
+echo -e "${BLUE}[4/11] Configuring SSH...${NC}"
 if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || (( SSH_PORT < 1024 || SSH_PORT > 65535 || SSH_PORT == 22 )); then
     echo -e "${RED}❌ Invalid port. Must be 1024-65535 and not 22.${NC}"
     exit 1
@@ -109,9 +109,9 @@ grep -q "^Port $SSH_PORT" /etc/ssh/sshd_config || echo "Port $SSH_PORT" >> /etc/
 echo -e "${GREEN}✓ SSH configured.${NC}"
 
 # Installing the necessary packages
-echo -e "${BLUE}[5/9] Installing the necessary packages...${NC}"
+echo -e "${BLUE}[5/11] Installing the necessary packages...${NC}"
 apt update -q && apt upgrade -y
-apt install -y -q ufw fail2ban iptables curl openssl ca-certificates gnupg
+apt install -y -q ufw fail2ban iptables curl openssl ca-certificates gnupg jq
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL "https://download.docker.com/linux/$OS_NAME/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg -q
 chmod a+r /etc/apt/keyrings/docker.gpg
@@ -131,7 +131,7 @@ else
 fi
 
 # Install 3X-UI
-echo -e "${BLUE}[6/9] Downloading and starting 3X-UI...${NC}"
+echo -e "${BLUE}[6/11] Downloading and starting 3X-UI...${NC}"
 INSTALL_DIR="/home/$USER/3x-ui"
 DATA_DIR="$INSTALL_DIR/db"
 CERT_DIR="$INSTALL_DIR/cert"
@@ -163,12 +163,13 @@ else
 fi
 
 # Configure ufw
-echo -e "${BLUE}[7/9] Configuring ufw...${NC}"
+echo -e "${BLUE}[7/11] Configuring ufw...${NC}"
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow "$SSH_PORT"/tcp comment "SSH"
 ufw allow 443/tcp comment "VLESS+Reality"
-ufw allow 2053/tcp comment "3X-UI"
+ufw allow 2053/tcp comment "3X-UI(panel)"
+ufw allow 2096/tcp comment "3X-UI(sub)"
 ufw --force enable
 echo -e "${GREEN}✓ Ufw is configured successfully.${NC}"
 
@@ -196,21 +197,136 @@ systemctl restart fail2ban
 echo -e "${GREEN}✓ UFW and Fail2ban configured${NC}"
 
 # Download RealiTLScanner
-echo -e "${BLUE}[8/9] Downloading RealiTLScanner...${NC}"
+echo -e "${BLUE}[8/11] Downloading RealiTLScanner...${NC}"
 mkdir -p /usr/local/bin
 if curl -fsSL -o /usr/local/bin/realitlscanner https://github.com/XTLS/RealiTLScanner/releases/download/v0.2.1/RealiTLScanner-linux-64; then
     chmod +x /usr/local/bin/realitlscanner
     if ls /usr/local/bin/realitlscanner; then
         echo -e "${GREEN}✓ RealiTLScanner has been successfully installed${NC}"
     else
-        echo -e "${YELLOW}❌ The binary was not found.${NC}"
+        echo -e "${RED}❌ The binary was not found.${NC}"
     fi
 else
     echo -e "${YELLOW}❌ Failed to download RealiTLScanner. Skipping...${NC}"
 fi
 
+# Creating and adding a certificate for the 3X-UI panel
+echo -e "${BLUE}[9/11] Creating and adding a certificate for the 3X-UI panel...${NC}"
+sudo mkdir -p $CERT_DIR
+IP=$(curl -s4 ifconfig.me 2>/dev/null || hostname -I | awk '{print $1}')
+sudo openssl req -x509 -newkey rsa:4096 -keyout $CERT_DIR/panel.key \
+  -out $CERT_DIR/panel.crt -days 3650 -nodes \
+  -subj "/CN=3x-ui-panel" \
+  -addext "subjectAltName=IP:$IP"
+if openssl x509 -in $CERT_DIR/panel.crt -text -noout | grep -A2 "Subject Alternative Name"; then
+    echo -e "${GREEN}✓ Certificate has been successfully created and installed.${NC}"
+else
+    echo -e "${RED}❌ The certificate was created or added with an error.${NC}"
+fi
+
+# Configuring 3X-UI panel
+echo -e "${BLUE}[10/11] Configuring 3X-UI panel...${NC}"
+read -s -p "New password to login to the panel: " PASS_PAN
+echo ""
+read -p "New port for connect to panel: " PORT_PAN
+read -p "Panel path suffix (default: /panel/): " PATH_PAN
+read -p "Subscription port (default: 2096): " PORT_SUB
+read -p "Subscription path suffix (default: /sub/): " PATH_SUB
+[[ -z "$PASS_PAN" || "$PASS_PAN" == "admin" ]] && { echo -e "${RED}❌ Invalid password.${NC}"; exit 1; }
+[[ -z "$PORT_PAN" || "$PORT_PAN" == "2053" ]] && { echo -e "${RED}❌ Invalid port.${NC}"; exit 1; }
+COOKIE=/tmp/3x-ui_cookie.txt
+echo -e "Path to cookie file: $COOKIE"
+curl -k -s -c $COOKIE -X POST \
+    "http://127.0.0.1:2053/login" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "username=admin&password=admin"
+curl -k -s -b /tmp/3x-ui_cookie.txt -X POST \
+  "http://127.0.0.1:2053/panel/setting/update" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"webListen\":\"\",
+    \"webDomain\":\"\",
+    \"webPort\":${PORT_PAN},
+    \"webCertFile\":\"/root/cert/panel.crt\",
+    \"webKeyFile\":\"/root/cert/panel.key\",
+    \"webBasePath\":\"/panel-${PATH_PAN}/\",
+    \"sessionMaxAge\":360,
+    \"pageSize\":25,
+    \"expireDiff\":0,
+    \"trafficDiff\":0,
+    \"remarkModel\":\"-ieo\",
+    \"datepicker\":\"gregorian\",
+    \"tgBotEnable\":false,
+    \"tgBotToken\":\"\",
+    \"tgBotProxy\":\"\",
+    \"tgBotAPIServer\":\"\",
+    \"tgBotChatId\":\"\",
+    \"tgRunTime\":\"@daily\",
+    \"tgBotBackup\":false,
+    \"tgBotLoginNotify\":true,
+    \"tgCpu\":80,
+    \"tgLang\":\"ru-RU\",
+    \"timeLocation\":\"Local\",
+    \"twoFactorEnable\":false,
+    \"twoFactorToken\":\"\",
+    \"subEnable\":true,
+    \"subJsonEnable\":false,
+    \"subTitle\":\"\",
+    \"subSupportUrl\":\"\",
+    \"subProfileUrl\":\"\",
+    \"subAnnounce\":\"\",
+    \"subEnableRouting\":true,
+    \"subRoutingRules\":\"\",
+    \"subListen\":\"\",
+    \"subPort\":${PORT_SUB},
+    \"subPath\":\"/sub-${PATH_SUB}/\",
+    \"subDomain\":\"\",
+    \"subCertFile\":\"\",
+    \"subKeyFile\":\"\",
+    \"subUpdates\":12,
+    \"externalTrafficInformEnable\":false,
+    \"externalTrafficInformURI\":\"\",
+    \"subEncrypt\":true,
+    \"subShowInfo\":true,
+    \"subURI\":\"\",
+    \"subJsonPath\":\"/json/\",
+    \"subJsonURI\":\"\",
+    \"subJsonFragment\":\"\",
+    \"subJsonNoises\":\"\",
+    \"subJsonMux\":\"\",
+    \"subJsonRules\":\"\",
+    \"ldapEnable\":false,
+    \"ldapHost\":\"\",
+    \"ldapPort\":389,
+    \"ldapUseTLS\":false,
+    \"ldapBindDN\":\"\",
+    \"ldapPassword\":\"\",
+    \"ldapBaseDN\":\"\",
+    \"ldapUserFilter\":\"(objectClass=person)\",
+    \"ldapUserAttr\":\"mail\",
+    \"ldapVlessField\":\"vless_enabled\",
+    \"ldapSyncCron\":\"@every 1m\",
+    \"ldapFlagField\":\"\",
+    \"ldapTruthyValues\":\"true,1,yes,on\",
+    \"ldapInvertFlag\":false,
+    \"ldapInboundTags\":\"\",
+    \"ldapAutoCreate\":false,
+    \"ldapAutoDelete\":false,
+    \"ldapDefaultTotalGB\":0,
+    \"ldapDefaultExpiryDays\":0,
+    \"ldapDefaultLimitIP\":0
+  }"
+curl -k -s -b $COOKIE -X POST \
+  "http://127.0.0.1:2053/panel/setting/updateUser" \
+  -H "Content-Type: application/json" \
+  -d "{\"oldUsername\":\"admin\",\"oldPassword\":\"admin\",\"newUsername\":\"admin\",\"newPassword\":\"${PASS_PAN}\"}"
+curl -k -s -b $COOKIE -X POST "http://127.0.0.1:2053/panel/setting/restartPanel"
+ufw allow $PORT_PAN/tcp comment '3X-UI' && ufw delete allow 2053/tcp && ufw reload
+rm -f $COOKIE
+echo -e "${GREEN}✓ Password and port for access to panel successfully edited.${NC}"
+
 # Checking and restarting SSH
-echo -e "${BLUE}[9/9] Checking and restarting SSH...${NC}"
+echo -e "${BLUE}[11/11] Checking and restarting SSH...${NC}"
 if ! sshd -t 2>/dev/null; then
     echo -e "${RED}❌ SSH config syntax error.${NC}"
     exit 1
@@ -252,30 +368,19 @@ else
     exit 1
 fi
 
-IP=$(curl -s4 ifconfig.me 2>/dev/null || hostname -I | awk '{print $1}')
 echo ""
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}   The script completed successfully!   ${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
-echo -e "${YELLOW}! Connect now in a new terminal window:${NC}"
-echo "  ssh -p $SSH_PORT $USER@$IP -i ~/.ssh/vpn-key"
-echo ""
-echo -e "${RED}⚠️ MUST DO IMMEDIATELY AFTER LOGGING INTO PANEL:${NC}"
-echo "  1. In panel settings change:"
-echo "     • Panel port: from 2053 to any port in range 10000-65535"
-echo "       (then also create ufw rule for new port and update fail2ban config)"
-echo "     • Panel path: from / to custom path (e.g. /my-panel-1/)"
-echo "     • IP: 127.0.0.1 (block external access)"
-echo "  2. Change default login/password to strong custom credentials"
-echo ""
-echo -e "${GREEN}✅ 3X-UI installed and running: ghcr.io/mhsanaei/3x-ui:v2.8.10 (version locked)${NC}"
-echo -e "${GREEN}✅ SSH: port $SSH_PORT, key-only auth, root login disabled${NC}"
-echo -e "${GREEN}✅ Firewall: all incoming traffic blocked except VLESS (443/tcp) and SSH ($SSH_PORT/tcp)${NC}"
-echo ""
-echo -e "${YELLOW}💡 After successful connection via 'ssh -p $SSH_PORT $USER@$IP -i ~/.ssh/vpn-key'${NC}"
-echo -e "${YELLOW}close this terminal and work only through the new user.${NC}"
-cat << "EOF"
-After changing panel port, run:
-ufw allow 'NEW_PORT'/tcp comment '3X-UI' && ufw delete allow 2053/tcp && ufw reload
-EOF
+echo -e "${YELLOW}The following steps to follow are:${NC}"
+echo -e "1. Copy the command below and paste it into the terminal on your device to connect via ssh with the new settings to this server:"
+echo -e "   ${BLUE}ssh -p $SSH_PORT $USER@$IP -i ~/.ssh/vpn-key${NC}"
+echo -e "2. In panel settings change:"
+echo -e "   •${BLUE} Panel port: from 2053 to any port in range 10000-65535${NC}"
+echo -e "   •${BLUE} Subscription port: from 2096 to any port in range 10000-65535${NC}"
+echo -e "   •${BLUE} Panel path: from / to custom path${NC}"
+echo -e "   •${BLUE} 127.0.0.1 (block external access)${NC}"
+echo -e "   •${BLUE} Change path to the panel's key: $CERT_DIR/panel.key${NC}"
+echo -e "   •${BLUE} Change path to the panel's certificate: $CERT_DIR/panel.crt${NC}"
+echo -e "   •${BLUE} Change default login/password to strong custom credentials${NC}"
