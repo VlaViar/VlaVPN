@@ -391,7 +391,7 @@
         <div class="container">
             <p>&copy; 2026 VPN instruction. Created by VlaViar.</p>
             <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.6;">
-                Disclaimer: Используйте VPN ответственно и в соответствии с законодательством вашей страны.
+                По всем вопросам обращаться к администратору сервиса.
             </p>
         </div>
     </footer>
@@ -447,21 +447,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    function scrollToWithOffset(element, offset) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+    }
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href').substring(1);
             const targetCard = document.getElementById(targetId);
+            
+            const scrollTarget = targetCard?.querySelector('.step-header') || targetCard;
             
             if (targetCard && targetCard.classList.contains('step-card')) {
                 e.preventDefault();
                 toggleStep(targetCard);
                 
                 setTimeout(() => {
-                    targetCard.scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }, 150);
+                    const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
+                    scrollToWithOffset(scrollTarget, headerHeight + 10);
+                }, 400);
             }
         });
     });
