@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Vars for apt
 export DEBIAN_FRONTEND=noninteractive
 export APT_OPTIONS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold"
 
@@ -11,6 +12,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Title list
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}              Xray + 3X-UI              ${NC}"
 echo -e "${GREEN}========================================${NC}"
@@ -21,15 +23,32 @@ echo -e "${GREEN}✓ Starting from root.${NC}"
 
 # OS detection
 if grep -qi "ID=debian" /etc/os-release; then
-    OS_NAME="debian"
-    CODENAME=$(awk -F= '/^VERSION_CODENAME=/ {print $2}' /etc/os-release 2>/dev/null || echo "bookworm")
+    NAME_OS="debian"
+    CODENAME_OS=$(awk -F= '/^VERSION_CODENAME=/ {print $2}' /etc/os-release 2>/dev/null)
+    [[ -z "$CODENAME_OS" ]] && CODENAME_OS="trixie"
 else
     echo -e "${RED}❌ Only Debian supported${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ OS: ${OS_NAME^} ${CODENAME}${NC}"
+echo -e "${GREEN}✓ OS: ${NAME_OS^} ${CODENAME_OS}${NC}"
 
-# Checking (and installing) the sudo package
+# Apt repo check and fix
+if [[ -f /etc/apt/sources.list ]] && grep -q "^deb cdrom:" /etc/apt/sources.list && ! grep -qE "^deb (http|ftp)://" /etc/apt/sources.list; then
+    echo -e "${YELLOW}⊹ Fixing apt sources (CD-ROM → network)...${NC}"
+    cp /etc/apt/sources.list /etc/apt/sources.list.backup-$(date +%F)
+    cat > /etc/apt/sources.list << EOF
+deb http://deb.debian.org/debian ${CODENAME_OS} main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security ${CODENAME_OS}-security main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian ${CODENAME_OS}-updates main contrib non-free non-free-firmware
+EOF
+    if ! apt-get update -qq >/dev/null 2>&1; then
+        echo -e "${RED}❌ Failed to update apt lists.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Apt sources updated.${NC}"
+fi
+
+# Checking and installing the sudo package
 if ! command -v sudo &> /dev/null; then
     echo -e "${RED}❌ Sudo is not installed.${NC}"
     read -p "Do you want to install sudo? (y/n): " INSTALL_SUDO
@@ -54,7 +73,7 @@ else
     echo -e "${GREEN}✓ Sudo has already been installed.${NC}"
 fi
 
-# Off GA on host
+# Configure GA
 if systemctl list-units --all | grep "qemu-guest-agent.service" > /dev/null ; then
     echo -e "${YELLOW}The GA agent was found on the host.${NC}"
     echo -e "${BLUE}Started process configuring GA...${NC}"
@@ -171,11 +190,11 @@ apt-get update -q \
 apt-get install -q -y \
     -o Dpkg::Options::=--force-confdef \
     -o Dpkg::Options::=--force-confold \
-    bash-completion tree net-tools ufw fail2ban iptables curl openssl ca-certificates gnupg git sqlite3
+    bash-completion vim tree net-tools ufw fail2ban iptables curl openssl ca-certificates gnupg git sqlite3
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL "https://download.docker.com/linux/$OS_NAME/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg -q
+curl -fsSL "https://download.docker.com/linux/$NAME_OS/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg -q
 chmod a+r /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$OS_NAME $CODENAME stable" \
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$NAME_OS $CODENAME_OS stable" \
 | tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt-get update -q \
     -o Dpkg::Options::=--force-confdef \
