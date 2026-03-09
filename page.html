@@ -33,6 +33,52 @@
             --radius-lg: 20px;
             --transition: all 0.3s ease;
         }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                linear-gradient(rgba(11, 15, 25, 0.705), rgb(11, 15, 25)),
+                url('https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80'),
+                radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: cover, cover, 80px 80px;
+            background-position: center, center, 0 0;
+            background-attachment: fixed, fixed, fixed;
+            background-repeat: no-repeat, no-repeat, repeat;
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .step-header {
+                padding: 18px 16px;
+                min-height: 60px;
+            }
+            .btn-cta {
+                padding: 12px 24px;
+            }
+        }
+
+        .security-notice {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .logo span {
+            color: var(--text-main);
+        }
+
+        .step-content {
+            will-change: max-height;
+        }
 
         html {
             scroll-behavior: auto;
@@ -328,15 +374,13 @@
                 </div>
                 <div id="content-1" class="step-content">
                     <div class="step-body">
-                        <p>1. Сообщите администратору о желании подключить VPN.</p>
-                        <p>2. Предоставьте вашу личную почту (желательно <strong>Яндекс</strong>).</p>
-                        <p>3. Проверьте почту — вы получите письмо со <strong>ссылкой</strong> на материалы для <strong>подключения</strong>.</p>
-                        <p>4. Перейдите по ссылке и запросите <strong>пароль</strong> у администратора.</p>
-                        <p>5. После получения введите пароль, откройте <strong>файл</strong> и скопируйте <strong>ссылку</strong> из него.</p>
-
-                        <div class="screenshot-placeholder">
-                            [Место для скриншота]
-                        </div>
+                        <p>1. Сообщите <strong>администратору</strong> сервиса о вашем желании подключить VPN.</p>
+                        <p>2. Дождитесь от администратора сообщения с <strong>почтовым адресом</strong> и <strong>паролем</strong>.</p>
+                        <p>3. Отправьте любое нейтральное и безобидное сообщение на полученный адрес (отправка желательна с вашей личной почты Google).</p>
+                        <p>4. Проверьте почту — вы получите письмо со <strong>ссылкой</strong>.</p>
+                        <p>5. Перейдите по ссылке и скачайте <strong>архив</strong>.</p>
+                        <p>6. После скачивания откройте архив и введите полученный ранее <strong>пароль</strong> для распаковки архива.</p>
+                        <p>7. Откройте <strong>файл</strong> из распакованного архива и скопируйте оттуда <strong>ссылку</strong>.</p>
                     </div>
                 </div>
             </article>
@@ -349,14 +393,11 @@
                     </div>
                     <span class="toggle-icon">▼</span>
                 </div>
-                <div id="content-1" class="step-content">
+                <div id="content-2" class="step-content">
                     <div class="step-body">
-                        <p>1. Откройте <strong>Google Play</strong> или <strong>App Store</strong>.</p>
+                        <p>1. Откройте ваш основной магазин приложений (например, <strong>Google Play</strong> или <strong>App Store</strong>).</p>
                         <p>2. Введите в поиске <strong>v2raytun</strong>.</p>
                         <p>3. Найдите приложение в списке и скачайте его.</p>
-                        
-                        <div class="screenshot-placeholder">
-                            [Место для скриншота]
                         </div>
                     </div>
                 </div>
@@ -366,24 +407,59 @@
                 <div class="step-header" role="button" tabindex="0" aria-expanded="false" aria-controls="content-2">
                     <div class="step-title">
                         <span class="step-number">3</span>
+                        Подключение к VPN-серверу
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div id="content-3" class="step-content">
+                    <div class="step-body">
+                        <p>1. Откройте скачанное приложение.</p>
+                        <p>2. В правом верхнем углу нажмите на «<strong>+</strong>».</p>
+                        <p>3. Далее выберите «<strong>Импорт из буфера обмена</strong>» после чего скопированная ранее ссылка автоматически вставится и на главном экране приложения появится ваш профиль.</p>
+                        <p><em>Если этого не произошло, то проверьте, скопирована ли у вас ссылка</em></p>
+                        <p><em>Если у вас нету ссылки, получите её выполнив шаг «<a href="#preparation" class="step-link"><strong>Подготовка</strong></a>» данной инструкции.</em></p>
+                        <p><em>Если при импорте произошла какая-либо ошибка, обратитесь к администратору сервиса для решения этой проблемы.</em></p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="step-card">
+                <div class="step-header" role="button" tabindex="0" aria-expanded="false" aria-controls="content-2">
+                    <div class="step-title">
+                        <span class="step-number">4</span>
                         Настройка VPN-клиента
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div id="content-4" class="step-content">
+                    <div class="step-body">
+                        <p>1. Перейдите в <strong>настройки</strong> приложения.</p>
+                        <p>2. Найдите раздел «<strong>Правила трафика</strong>» и перейдите в него.</p>
+                        <p>3. Найдите раздел «<strong>Правила от сообщества</strong>» и перейдите в него.</p>
+                        <p>4. Выберите «<strong>.RU без VPN</strong>» и нажмите кнопку <strong>Применить</strong>.</p>
+                    </div>
+                </div>
+            </article>
+        
+            <article class="step-card">
+                <div class="step-header" role="button" tabindex="0" aria-expanded="false" aria-controls="content-2">
+                    <div class="step-title">
+                        <span class="step-number">5</span>
+                        Проверка работы VPN
                     </div>
                     <span class="toggle-icon">▼</span>
                 </div>
                 <div id="content-2" class="step-content">
                     <div class="step-body">
-                        <p>1. Откройте скачанное приложение.</p>
-                        <p>2. В правом верхнем углу нажмите на «<strong>+</strong>».</p>
-                        <p>3. Далее выберите «<strong>Импорт из QR-кода</strong>» или «<strong>Импорт из буфера обмена</strong>».</p>
-                        <p><em>Ссылку и QR-код для импорта можно получить выполнив шаг №1 «<a href="#preparation" class="step-link"><strong>Подготовка</strong></a>».</em></p>
-
-                        <div class="screenshot-placeholder">
-                            [Место для скриншота]
-                        </div>
+                        <p>1. Откройте любой браузер.</p>
+                        <p>2. Введите в поиске сайт <strong>mylocation.org</strong> и перейдите на него.</p>
+                        <p>3. Проверите страну вашего нахождения. Должна быть страна, в которой располагается сервер с VPN.</p>
+                        <p>4. Теперь введите в поиске сайт <strong>2ip.ru</strong> и перейдите на него.</p>
+                        <p>5. Проверите страну вашего нахождения. Должна быть Россия.</p>
+                        <p>6. Затем зайдите во все приложения, которые вы используется вместе с VPN, и проверите их работу.</p>
                     </div>
                 </div>
             </article>
-
         </section>
     </main>
 
@@ -401,77 +477,94 @@ document.addEventListener('DOMContentLoaded', () => {
     const steps = document.querySelectorAll('.step-card');
     const headers = document.querySelectorAll('.step-header');
 
+    function scrollToWithOffset(element, offset) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    }
+
     function toggleStep(card) {
-        const isActive = card.classList.contains('active');
         const content = card.querySelector('.step-content');
         const header = card.querySelector('.step-header');
+        const isActive = card.classList.contains('active');
 
         if (isActive) {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            void content.offsetHeight;
+            content.style.maxHeight = '0';
             card.classList.remove('active');
-            if (content) content.style.maxHeight = null;
-            if (header) header.setAttribute('aria-expanded', 'false');
+            header.setAttribute('aria-expanded', 'false');
             return;
         }
 
         steps.forEach(step => {
-            step.classList.remove('active');
-            const c = step.querySelector('.step-content');
-            const h = step.querySelector('.step-header');
-            if (c) c.style.maxHeight = null;
-            if (h) h.setAttribute('aria-expanded', 'false');
+            if (step !== card && step.classList.contains('active')) {
+                const c = step.querySelector('.step-content');
+                const h = step.querySelector('.step-header');
+                c.style.maxHeight = c.scrollHeight + 'px';
+                void c.offsetHeight;
+                c.style.maxHeight = '0';
+                step.classList.remove('active');
+                h.setAttribute('aria-expanded', 'false');
+            }
         });
 
         card.classList.add('active');
+        header.setAttribute('aria-expanded', 'true');
         
-        if (content && header) {
-            content.style.maxHeight = 'none';
-            const height = content.scrollHeight;
-            content.style.maxHeight = '0';
-            void content.offsetHeight;
-            content.style.maxHeight = height + 'px';
-            header.setAttribute('aria-expanded', 'true');
-        }
+        content.style.maxHeight = 'none';
+        const height = content.scrollHeight;
+        content.style.maxHeight = '0';
+        void content.offsetHeight;
+        content.style.maxHeight = height + 'px';
+
+        setTimeout(() => {
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
+            const cardRect = card.getBoundingClientRect();
+            
+            if (cardRect.bottom > window.innerHeight - 100) {
+                const targetY = cardRect.top + window.pageYOffset - headerHeight - 20;
+                window.scrollTo({ top: targetY, behavior: 'smooth' });
+            }
+        }, 300);
+
+        content.addEventListener('transitionend', function handler() {
+            if (card.classList.contains('active')) {
+                content.style.maxHeight = 'none';
+            }
+            content.removeEventListener('transitionend', handler);
+        }, { once: true });
     }
 
     headers.forEach(header => {
-        header.addEventListener('click', () => {
-            const card = header.closest('.step-card');
-            toggleStep(card);
+        header.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            toggleStep(header.closest('.step-card'));
         });
 
         header.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                header.click();
+                toggleStep(header.closest('.step-card'));
             }
         });
     });
-
-    function scrollToWithOffset(element, offset) {
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-        });
-    }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href').substring(1);
             const targetCard = document.getElementById(targetId);
             
-            const scrollTarget = targetCard?.querySelector('.step-header') || targetCard;
-            
             if (targetCard && targetCard.classList.contains('step-card')) {
                 e.preventDefault();
-                toggleStep(targetCard);
+                if (!targetCard.classList.contains('active')) {
+                    toggleStep(targetCard);
+                }
                 
                 setTimeout(() => {
                     const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
-                    scrollToWithOffset(scrollTarget, headerHeight + 10);
-                }, 400);
+                    scrollToWithOffset(targetCard.querySelector('.step-header'), headerHeight + 10);
+                }, 350);
             }
         });
     });
