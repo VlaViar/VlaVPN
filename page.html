@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,11 @@
     <meta property="og:description" content="Полный гайд по развертыванию личного VPN-сервера.">
     <meta property="og:type" content="website">
 
-    <title> VlaVPN | Инструкция </title>
+    <title>VlaVPN | Инструкция</title>
+
+    <link rel="icon" type="image/png" sizes="16x16" href="https://cdn-icons-png.flaticon.com/512/5919/5919142.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://cdn-icons-png.flaticon.com/512/5919/5919142.png">
+    <link rel="icon" type="image/png" sizes="180x180" href="https://cdn-icons-png.flaticon.com/512/5919/5919142.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,11 +37,21 @@
             --radius-lg: 20px;
             --transition: all 0.3s ease;
         }
-        
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-dark);
-            background-image: 
+            background-image:
                 linear-gradient(rgba(11, 15, 25, 0.705), rgb(11, 15, 25)),
                 url('https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80'),
                 radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
@@ -49,62 +63,6 @@
             line-height: 1.6;
             overflow-x: hidden;
             position: relative;
-        }
-
-        @media (max-width: 768px) {
-            .step-header {
-                padding: 18px 16px;
-                min-height: 60px;
-            }
-            .btn-cta {
-                padding: 12px 24px;
-            }
-        }
-
-        .security-notice {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .logo span {
-            color: var(--text-main);
-        }
-
-        .step-content {
-            will-change: max-height;
-        }
-
-        html {
-            scroll-behavior: auto;
-        }
-        .step-link {
-            color: var(--text-muted);
-            text-decoration: underline;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .step-link:hover {
-            color: var(--primary-blue);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
         }
 
         .container {
@@ -151,6 +109,10 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .logo span {
+            color: var(--text-main);
         }
 
         .btn-cta {
@@ -217,6 +179,11 @@
             justify-content: space-between;
             align-items: center;
             user-select: none;
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            text-align: left;
         }
 
         .step-title {
@@ -261,74 +228,15 @@
             color: var(--text-muted);
         }
 
-        .code-block {
-            background: #1E293B;
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin: 20px 0;
-            position: relative;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            border: 1px solid var(--border-color);
-            overflow-x: auto;
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.8rem;
+        .step-link {
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .copy-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 4px 12px;
-            border-radius: 6px;
+            text-decoration: underline;
             cursor: pointer;
-            font-size: 0.8rem;
-            transition: var(--transition);
+            transition: color 0.2s;
         }
 
-        .copy-btn:hover {
-            border-color: var(--neon-accent);
-            color: var(--neon-accent);
-        }
-
-        .screenshot-placeholder {
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(45deg, #1e293b, #0f172a);
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .screenshot-placeholder::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 60%);
-            animation: rotate 10s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .step-link:hover {
+            color: var(--primary-blue);
         }
 
         .footer {
@@ -344,6 +252,8 @@
             .hero h1 { font-size: 2.5rem; }
             .step-header { padding: 16px; }
             .step-body { padding: 0 16px 16px; }
+            .btn-cta { padding: 12px 24px; }
+            body { background-attachment: scroll, scroll, scroll; }
         }
     </style>
 </head>
@@ -351,112 +261,113 @@
 
     <header class="header">
         <div class="container nav-wrapper">
-            <a href="#" class="logo">Vla<span style="color:var(--text-main)">VPN</span></a>
-            <a href="#start" class="btn-cta">В начало</a>
+            <a href="#start" class="logo">Vla<span>VPN</span></a>
+            <a href="#preparation" class="btn-cta">В начало</a>
         </div>
     </header>
 
     <main>
         <section class="hero container" id="start">
             <h1>Инструкция по установке и настройке сервиса<br><span>VlaVPN</span></h1>
-            <p>Просто следуйте инструкции, и уже через 5 минут вы сможете пользоваться VPN.</p>
+            <p>Просто следуйте инструкции, и уже через 5 минут вы сможете пользоваться VPN</p>
         </section>
 
         <section class="guide-section container">
 
             <article class="step-card" id="preparation">
-                <div class="step-header" role="button" tabindex="0" aria-expanded="true" aria-controls="content-1">
-                    <div class="step-title">
+                <button class="step-header" type="button" aria-expanded="false" aria-controls="content-1">
+                    <span class="step-title">
                         <span class="step-number">1</span>
                         Подготовка
-                    </div>
+                    </span>
                     <span class="toggle-icon">▼</span>
-                </div>
+                </button>
                 <div id="content-1" class="step-content">
                     <div class="step-body">
                         <p>1. Сообщите <strong>администратору</strong> сервиса о вашем желании подключить VPN.</p>
-                        <p>2. Дождитесь от администратора сообщения с <strong>почтовым адресом</strong> и <strong>паролем</strong>.</p>
-                        <p>3. Отправьте любое нейтральное и безобидное сообщение на полученный адрес (отправка желательна с вашей личной почты Google).</p>
-                        <p>4. Проверьте почту — вы получите письмо со <strong>ссылкой</strong>.</p>
-                        <p>5. Перейдите по ссылке и скачайте <strong>архив</strong>.</p>
-                        <p>6. После скачивания откройте архив и введите полученный ранее <strong>пароль</strong> для распаковки архива.</p>
-                        <p>7. Откройте <strong>файл</strong> из распакованного архива и скопируйте оттуда <strong>ссылку</strong>.</p>
+                        <p>2. Дождитесь от администратора <strong>сообщения</strong> с <strong>почтовым адресом</strong> и <strong>паролем</strong>.</p>
+                        <p>3. Отправьте любое нейтральное и безобидное <strong>письмо</strong> на почтовый адрес из сообщения (отправка желательна с вашей <strong>личной</strong> почты <strong>Google</strong>).</p>
+                        <p>4. Проверьте почту — вы получите <strong>письмо</strong> со <strong>ссылкой</strong>.</p>
+                        <p>5. Перейдите по <strong>ссылке</strong> и скачайте <strong>архив</strong>.</p>
+                        <p>6. После скачивания откройте <strong>архив</strong> и введите, полученный из сообщения ранее, <strong>пароль</strong> для распаковки архива.</p>
+                        <p style="margin-bottom: 12px;">7. Откройте <strong>файл</strong> из распакованного архива и скопируйте оттуда <strong>ссылку</strong>.</p>
+                        <p><em>Если вам не пришло письмо или же не подошёл пароль для распаковки архива, обратитесь к администратору сервиса для решения.</em></p>
                     </div>
                 </div>
             </article>
 
             <article class="step-card">
-                <div class="step-header" role="button" tabindex="0" aria-expanded="true" aria-controls="content-1">
-                    <div class="step-title">
+                <button class="step-header" type="button" aria-expanded="false" aria-controls="content-2">
+                    <span class="step-title">
                         <span class="step-number">2</span>
                         Скачивание VPN-клиента
-                    </div>
+                    </span>
                     <span class="toggle-icon">▼</span>
-                </div>
+                </button>
                 <div id="content-2" class="step-content">
                     <div class="step-body">
                         <p>1. Откройте ваш основной магазин приложений (например, <strong>Google Play</strong> или <strong>App Store</strong>).</p>
                         <p>2. Введите в поиске <strong>v2raytun</strong>.</p>
-                        <p>3. Найдите приложение в списке и скачайте его.</p>
-                        </div>
+                        <p style="margin-bottom: 12px;">3. Найдите в списке <strong>приложение</strong> с таким названием и <strong>скачайте</strong> его.</p>
+                        <p><em>Если у вас другой магазин приложений и в нём нету v2raytun, обратитесь к администратору сервиса.</em></p>
                     </div>
                 </div>
             </article>
 
             <article class="step-card">
-                <div class="step-header" role="button" tabindex="0" aria-expanded="false" aria-controls="content-2">
-                    <div class="step-title">
+                <button class="step-header" type="button" aria-expanded="false" aria-controls="content-3">
+                    <span class="step-title">
                         <span class="step-number">3</span>
                         Подключение к VPN-серверу
-                    </div>
+                    </span>
                     <span class="toggle-icon">▼</span>
-                </div>
+                </button>
                 <div id="content-3" class="step-content">
                     <div class="step-body">
                         <p>1. Откройте скачанное приложение.</p>
                         <p>2. В правом верхнем углу нажмите на «<strong>+</strong>».</p>
-                        <p>3. Далее выберите «<strong>Импорт из буфера обмена</strong>» после чего скопированная ранее ссылка автоматически вставится и на главном экране приложения появится ваш профиль.</p>
-                        <p><em>Если этого не произошло, то проверьте, скопирована ли у вас ссылка</em></p>
-                        <p><em>Если у вас нету ссылки, получите её выполнив шаг «<a href="#preparation" class="step-link"><strong>Подготовка</strong></a>» данной инструкции.</em></p>
-                        <p><em>Если при импорте произошла какая-либо ошибка, обратитесь к администратору сервиса для решения этой проблемы.</em></p>
+                        <p style="margin-bottom: 12px;">3. Далее выберите «<strong>Импорт из буфера обмена</strong>» после чего скопированная ранее ссылка автоматически вставится и на главном экране приложения появится ваш профиль.</p>
+                        <p><em>Если этого не произошло, проверьте, скопировали ли вы ссылку.</em></p>
+                        <p><em>Если у вас нет ссылки, получите ее выполнив шаг «<a href="#preparation" class="step-link"><strong>Подготовка</strong></a>» данной инструкции.</em></p>
+                        <p><em>Если при импорте произошла какая-либо ошибка, обратитесь к администратору сервиса.</em></p>
                     </div>
                 </div>
             </article>
 
             <article class="step-card">
-                <div class="step-header" role="button" tabindex="0" aria-expanded="false" aria-controls="content-2">
-                    <div class="step-title">
+                <button class="step-header" type="button" aria-expanded="false" aria-controls="content-4">
+                    <span class="step-title">
                         <span class="step-number">4</span>
                         Настройка VPN-клиента
-                    </div>
+                    </span>
                     <span class="toggle-icon">▼</span>
-                </div>
+                </button>
                 <div id="content-4" class="step-content">
                     <div class="step-body">
                         <p>1. Перейдите в <strong>настройки</strong> приложения.</p>
-                        <p>2. Найдите раздел «<strong>Правила трафика</strong>» и перейдите в него.</p>
-                        <p>3. Найдите раздел «<strong>Правила от сообщества</strong>» и перейдите в него.</p>
+                        <p>2. Найдите и перейдите в раздел «<strong>Правила трафика</strong>».</p>
+                        <p>3. Далее перейдите в раздел «<strong>Правила от сообщества</strong>».</p>
                         <p>4. Выберите «<strong>.RU без VPN</strong>» и нажмите кнопку <strong>Применить</strong>.</p>
                     </div>
                 </div>
             </article>
-        
+
             <article class="step-card">
-                <div class="step-header" role="button" tabindex="0" aria-expanded="false" aria-controls="content-2">
-                    <div class="step-title">
+                <button class="step-header" type="button" aria-expanded="false" aria-controls="content-5">
+                    <span class="step-title">
                         <span class="step-number">5</span>
                         Проверка работы VPN
-                    </div>
+                    </span>
                     <span class="toggle-icon">▼</span>
-                </div>
-                <div id="content-2" class="step-content">
+                </button>
+                <div id="content-5" class="step-content">
                     <div class="step-body">
-                        <p>1. Откройте любой браузер.</p>
-                        <p>2. Введите в поиске сайт <strong>mylocation.org</strong> и перейдите на него.</p>
-                        <p>3. Проверите страну вашего нахождения. Должна быть страна, в которой располагается сервер с VPN.</p>
-                        <p>4. Теперь введите в поиске сайт <strong>2ip.ru</strong> и перейдите на него.</p>
-                        <p>5. Проверите страну вашего нахождения. Должна быть Россия.</p>
-                        <p>6. Затем зайдите во все приложения, которые вы используется вместе с VPN, и проверите их работу.</p>
+                        <p>1. Откройте любой браузер на вашем устройстве.</p>
+                        <p>2. Перейдите на сайт <a href="https://mylocation.org" class="step-link" target="_blank" rel="noopener"><strong>mylocation.org</strong></a>.</p>
+                        <p>3. Проверьте страну вашего нахождения. Должна быть указана страна, в которой располагается VPN-сервер.</p>
+                        <p>4. Теперь перейдите на сайт <a href="https://2ip.ru" class="step-link" target="_blank" rel="noopener"><strong>2ip.ru</strong></a>.</p>
+                        <p>5. Проверьте страну вашего нахождения. Должна быть Россия.</p>
+                        <p>6. Затем откройте приложения, которые вы обычно используете с VPN, и убедитесь, что они полностью работают.</p>
                     </div>
                 </div>
             </article>
@@ -465,7 +376,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 VPN instruction. Created by VlaViar.</p>
+            <p>&copy; 2026 VlaVPN instruction. Created by VlaViar.</p>
             <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.6;">
                 По всем вопросам обращаться к администратору сервиса.
             </p>
@@ -511,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.classList.add('active');
         header.setAttribute('aria-expanded', 'true');
-        
+
         content.style.maxHeight = 'none';
         const height = content.scrollHeight;
         content.style.maxHeight = '0';
@@ -521,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
             const cardRect = card.getBoundingClientRect();
-            
+
             if (cardRect.bottom > window.innerHeight - 100) {
                 const targetY = cardRect.top + window.pageYOffset - headerHeight - 20;
                 window.scrollTo({ top: targetY, behavior: 'smooth' });
@@ -538,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     headers.forEach(header => {
         header.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             toggleStep(header.closest('.step-card'));
         });
 
@@ -550,17 +461,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    steps.forEach(step => {
+        const content = step.querySelector('.step-content');
+        const header = step.querySelector('.step-header');
+        const expanded = header?.getAttribute('aria-expanded') === 'true';
+
+        if (expanded) {
+            step.classList.add('active');
+            content.style.maxHeight = content.scrollHeight + 'px';
+        } else {
+            step.classList.remove('active');
+            content.style.maxHeight = '0';
+        }
+    });
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href').substring(1);
             const targetCard = document.getElementById(targetId);
-            
+
             if (targetCard && targetCard.classList.contains('step-card')) {
                 e.preventDefault();
                 if (!targetCard.classList.contains('active')) {
                     toggleStep(targetCard);
                 }
-                
+
                 setTimeout(() => {
                     const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
                     scrollToWithOffset(targetCard.querySelector('.step-header'), headerHeight + 10);
